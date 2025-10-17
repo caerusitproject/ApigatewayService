@@ -7,13 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DecodingException.class)
     public Mono<ResponseEntity<Map<String, String>>> handleDecoding(DecodingException ex) {
@@ -31,6 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(WebClientResponseException.class)
     public ResponseEntity<String> handleWebClientException(WebClientResponseException ex) {
+        log.error("Webclient error: {}", ex.getMessage());
         return ResponseEntity
                 .status(ex.getStatusCode())
                 .body(ex.getResponseBodyAsString());
